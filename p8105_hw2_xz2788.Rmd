@@ -1,0 +1,30 @@
+---
+title: "p8105_hw2_xz2788"
+author: "Xiaoyue Zhang"
+date: "9/26/2018"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Loading packages
+
+```{r}
+library(tidyverse)
+```
+
+# Importing NYC Transit dataset:
+
+```{r}
+transit_data = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+```
+
+Clean Names:
+
+```{r}
+transit_data = janitor::clean_names(transit_data) %>% select(line:entry, vending, ada)
+```
+
+
