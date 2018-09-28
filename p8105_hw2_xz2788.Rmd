@@ -11,20 +11,113 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Loading packages
 
-```{r}
+```{r loading_package}
 library(tidyverse)
 ```
 
-# Importing NYC Transit dataset:
+# Problem 1
 
-```{r}
-transit_data = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv")
+Import and tidy data
+
+```{r import_data}
+transit_data = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
+                        col_types = "cccddccccccccccccccccclclcccddcc") %>% janitor::clean_names()
 ```
 
-Clean Names:
+Look at the data first:
+
+```{r view_data, eval=FALSE}
+View(transit_data)
+head(transit_data)
+tail(transit_data)
+str(transit_data)
+```
+
+Select the data needed:
+
+```{r select_data}
+transit_data_clean = select(transit_data, line:entry, vending, ada)
+```
+
+Convert "entry" and "vending" into logical variables:
+
+```{r convert_to_logical_vector}
+transit_data_clean$entry = ifelse(transit_data_clean$entry == "YES", TRUE, FALSE)
+transit_data_clean$vending = ifelse(transit_data_clean$vending == "YES", TRUE, FALSE)
+```
+
+Remove duplicated rows by station name and line:
 
 ```{r}
-transit_data = janitor::clean_names(transit_data) %>% select(line:entry, vending, ada)
+transit_data_clean = distinct(transit_data_clean, station_name, line, .keep_all = TRUE)
 ```
+
+Review this new dataset:
+
+```{r overview_new_data, eval=FALSE}
+str(transit_data_clean)
+View(transit_data_clean)
+```
+
+Get the dimension of the new dataset
+
+```{r}
+dim(transit_data_clean)
+```
+
+Description of this dataset:
+
+This dataset contains 19 variables and 465 records (stations). The variables include line, station name as well as its location, the routes served at that station, entry and its type, vending and ADA compliance. Station location (latitude/longitude) are numeric variables, "entry", "vending" and "ada" are logical variables. All of the others are character variables.
+
+Process of data cleaning:
+
+Firstly specifying the column type when importing the data then I used janitor::clean_names to clean tha names. After looking at data, I selected the variables needed to a new dataset and converted "entry" and "vending" variables into logical ones for future analysis. Lastly, I've removed all the duplicated rows from the dataset since we only had to focus on the entry of each station other than the mutiple exits from each station.
+
+The dimension of this dataset is 465 * 19. This is not yet a tidy data since the routs served at each station should be classified into each train route instead of just enumerating.
+
+## Answer the related questions in HW2
+
+```{r count_rows}
+nrow(transit_data_clean)
+```
+
+1. There are in total 465 distinct stations in the data.
+
+```{r filter_ada_compliant}
+filter(transit_data_clean, ada == TRUE) %>% nrow()
+```
+
+2. There are 84 stations are ADA compliant.
+
+```{r proportion_with_conditions}
+mean(transit_data_clean$entry == TRUE & transit_data_clean$vending == FALSE)
+```
+
+3. The proportion of station entrances / exits without vending allow entrance is 0.01.
+
+## Reformating data
+
+Make route number and route name two distinct variables:
+
+```{r reformat}
+transit_data_reformat = gather(transit_data_clean, key = route_number, value = route_name, route1:route11)
+```
+
+Filter the rows and remove duplicated ones:
+
+```{r filter_A_train}
+filter(transit_data_reformat, route_name == "A") %>% distinct(station_name, line, .keep_all = TRUE) %>% nrow()
+```
+
+```{r count_ada_compliant}
+filter(transit_data_reformat, route_name == "A") %>% distinct(station_name, line, .keep_all = TRUE) %>% filter(ada == TRUE) %>% nrow()
+```
+
+Therefore, 60 distinct stations serve the A train and 17 of these are ADA compliant.
+
+# Problem 2
+
+
+
 
 
