@@ -11,13 +11,14 @@ knitr::opts_chunk$set(echo = TRUE)
 
 # Loading packages
 
-```{r loading_package}
+```{r loading_package, results='hide', message=FALSE}
 library(tidyverse)
+library(readxl)
 ```
 
 # Problem 1
 
-Import and tidy data
+Import and tidy data:
 
 ```{r import_data}
 transit_data = read_csv(file = "./data/NYC_Transit_Subway_Entrance_And_Exit_Data.csv",
@@ -31,6 +32,7 @@ View(transit_data)
 head(transit_data)
 tail(transit_data)
 str(transit_data)
+skimr::skim(transit_data)
 ```
 
 Select the data needed:
@@ -61,7 +63,7 @@ View(transit_data_clean)
 
 Get the dimension of the new dataset
 
-```{r}
+```{r dimension}
 dim(transit_data_clean)
 ```
 
@@ -117,7 +119,131 @@ Therefore, 60 distinct stations serve the A train and 17 of these are ADA compli
 
 # Problem 2
 
+Import and tidy the Mr. Trash Wheel sheet:
+### Why can't I directly select A:N
+```{r tidy_sheet_1}
+trash_wheel_data = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", range = "A2:N258", sheet = 1) %>%
+  janitor::clean_names() %>% 
+  rename(weight = weight_tons, volume = volume_cubic_yards) %>% 
+  filter(!is.na(dumpster))
+```
+
+Round the number of sports balls and convert into an integer variable:
+
+```{r convert_sports_balls}
+trash_wheel_data$sports_balls = round(trash_wheel_data$sports_balls) %>% 
+as.integer(trash_wheel_data$sports_balls)
+```
+
+Look at the data first:
+
+```{r review_data, eval = FALSE}
+View(trash_wheel_data)
+str(trash_wheel_data)
+head(trash_wheel_data)
+tail(trash_wheel_data)
+skimr::skim(trash_wheel_data)
+```
+
+Import and tidy precipitation data for 2016 and 2017:
+
+```{r tidy_precipitation_sheet_2017}
+precipit_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 3) %>% 
+  janitor::clean_names() %>% 
+  rename(month = precipitation_in, precipitation = x_1) %>% 
+  na.omit() %>% 
+  mutate(year = "2017")
+precipit_data_2017$precipitation = as.numeric(precipit_data_2017$precipitation)
+precipit_data_2017 = precipit_data_2017[-1,]
+precipit_data_2017$precipitation = round(precipit_data_2017$precipitation, digits = 2)
+precipit_data_2017$month = month.name[1:8]
+```
+
+```{r tidy_precipitation_sheet_2016}
+precipit_data_2016 = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 4) %>% 
+  janitor::clean_names() %>% 
+  rename(month = precipitation_in, precipitation = x_1) %>% 
+  na.omit() %>% 
+  mutate(year = "2016")
+precipit_data_2016$precipitation = as.numeric(precipit_data_2016$precipitation)
+precipit_data_2016 = precipit_data_2016[-1,]
+precipit_data_2016$precipitation = round(precipit_data_2016$precipitation, digits = 2)
+precipit_data_2016$month = month.name  
+```
+
+Combine datasets:
+
+```{r combine_datasets}
+precipit_data = bind_rows(precipit_data_2016, precipit_data_2017)
+```
+
+Describe these datasets:
+
+The "trash_wheel_data" consists of `r ncol(trash_wheel_data)` variables and `r nrow(trash_wheel_data)` observations. These variables are "`r names(trash_wheel_data)`", mainly documenting weight and date of trash and its types.
+
+The "precipit_data" consists of `r ncol(precipit_data)` variables and `r nrow(precipit_data)` observations. The key variables are precipitation in each month of 2016 and 2017. The total precipitation in 2017 is `r sum(precipit_data[which(precipit_data[,3] == 2017), 2])` and the median number of sports balls in a dumpster in 2016 is `r median(filter(trash_wheel_data, year == 2016)$sports_balls)`.
+
+# Problem 3
+
+Loading package
+
+```{r loading_data, results = 'hide', message = FALSE}
+devtools::install_github("p8105/p8105.datasets")
+library(p8105.datasets)
+library(readr)
+```
+
+View the data first:
+
+```{r overview_data, results = 'hide'}
+str(brfss_smart2010)
+head(brfss_smart2010)
+tail(brfss_smart2010)
+skimr::skim(brfss_smart2010)
+```
 
 
+```{r tidy_data}
+brfss_smart2010_tidy = janitor::clean_names(brfss_smart2010) %>% 
+  filter(topic == "Overall Health") %>% 
+  select(-class, -topic, -question, -sample_size) %>% 
+  select(year:data_value) %>% 
+  rename(state = locationabbr, county = locationdesc) %>% 
+  spread(key = response, value = data_value) %>% 
+  janitor::clean_names() %>% 
+  mutate(more_than_good = excellent + very_good)
+```
 
+Answering questions:
+
+There are `r nrow(brfss_smart2010_tidy)` unique locations in the dataset.
+
+```{r number_of_states}
+distinct(brfss_smart2010_tidy, state, .keep_all = TRUE) %>% 
+  nrow()
+```
+
+```{r most_observed_state}
+count_(brfss_smart2010_tidy, "state", sort = TRUE)
+```
+
+```{r median_2002_response}
+data_2002 = filter(brfss_smart2010_tidy, year == 2002)
+median(data_2002$excellent, na.rm = TRUE)
+```
+
+There are 51 states in the dataset, so every state is represented. NJ is observed most.
+The median of the “Excellent” response value in 2002 is 23.6.
+
+Making plots:
+
+```{r histogram_plot}
+ggplot(data_2002, aes(x = excellent)) + geom_histogram()
+```
+
+```{r scatter_plot}
+filter(brfss_smart2010_tidy, county %in% c("NY - New York County", "NY - Queens County")) %>% 
+  ggplot(aes(x = excellent, y = year)) +
+  geom_point(aes(color = county))
+```
 
