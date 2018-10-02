@@ -77,7 +77,7 @@ Firstly specifying the column type when importing the data then I used janitor::
 
 The dimension of this dataset is 465 * 19. This is not yet a tidy data since the routs served at each station should be classified into each train route instead of just enumerating.
 
-## Answer the related questions in HW2
+Answers to the related questions in HW2:
 
 ```{r count_rows}
 nrow(transit_data_clean)
@@ -97,7 +97,7 @@ mean(transit_data_clean$entry == TRUE & transit_data_clean$vending == FALSE)
 
 3. The proportion of station entrances / exits without vending allow entrance is 0.01.
 
-## Reformating data
+Reformating data:
 
 Make route number and route name two distinct variables:
 
@@ -120,7 +120,7 @@ Therefore, 60 distinct stations serve the A train and 17 of these are ADA compli
 # Problem 2
 
 Import and tidy the Mr. Trash Wheel sheet:
-### Why can't I directly select A:N
+
 ```{r tidy_sheet_1}
 trash_wheel_data = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", range = "A2:N258", sheet = 1) %>%
   janitor::clean_names() %>% 
