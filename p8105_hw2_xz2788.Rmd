@@ -67,17 +67,17 @@ Get the dimension of the new dataset
 dim(transit_data_clean)
 ```
 
-Description of this dataset:
+## Description of this dataset:
 
 This dataset contains 19 variables and 465 records (stations). The variables include line, station name as well as its location, the routes served at that station, entry and its type, vending and ADA compliance. Station location (latitude/longitude) are numeric variables, "entry", "vending" and "ada" are logical variables. All of the others are character variables.
 
-Process of data cleaning:
+## Process of data cleaning:
 
 Firstly specifying the column type when importing the data then I used janitor::clean_names to clean tha names. After looking at data, I selected the variables needed to a new dataset and converted "entry" and "vending" variables into logical ones for future analysis. Lastly, I've removed all the duplicated rows from the dataset since we only had to focus on the entry of each station other than the mutiple exits from each station.
 
 The dimension of this dataset is 465 * 19. This is not yet a tidy data since the routs served at each station should be classified into each train route instead of just enumerating.
 
-Answers to the related questions in HW2:
+## Answers to the related questions in HW2:
 
 ```{r count_rows}
 nrow(transit_data_clean)
@@ -177,7 +177,7 @@ Combine datasets:
 precipit_data = bind_rows(precipit_data_2016, precipit_data_2017)
 ```
 
-Describe these datasets:
+## Describe these datasets:
 
 The "trash_wheel_data" consists of `r ncol(trash_wheel_data)` variables and `r nrow(trash_wheel_data)` observations. These variables are "`r names(trash_wheel_data)`", mainly documenting weight and date of trash and its types.
 
@@ -214,7 +214,7 @@ brfss_smart2010_tidy = janitor::clean_names(brfss_smart2010) %>%
   mutate(more_than_good = excellent + very_good)
 ```
 
-Answering questions:
+## Answering questions:
 
 There are `nrow(distinct(brfss_smart2010_tidy, county, .keep_all = TRUE))` unique locations in the dataset.
 
@@ -235,7 +235,7 @@ median(data_2002$excellent, na.rm = TRUE)
 There are 51 states in the dataset, so every state is represented. NJ is observed most.
 The median of the “Excellent” response value in 2002 is 23.6.
 
-Making plots:
+## Making plots:
 
 ```{r histogram_plot}
 ggplot(data_2002, aes(x = excellent)) + geom_histogram()
