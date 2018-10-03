@@ -92,10 +92,10 @@ filter(transit_data_clean, ada == TRUE) %>% nrow()
 2. There are 84 stations are ADA compliant.
 
 ```{r proportion_with_conditions}
-mean(transit_data_clean$entry == TRUE & transit_data_clean$vending == FALSE)
+nrow(filter(transit_data, entry == "YES", vending == "NO"))/nrow(filter(transit_data, vending == "NO"))
 ```
 
-3. The proportion of station entrances / exits without vending allow entrance is 0.01.
+3. The proportion of station entrances / exits without vending allow entrance is 0.377.
 
 Reformating data:
 
@@ -216,7 +216,7 @@ brfss_smart2010_tidy = janitor::clean_names(brfss_smart2010) %>%
 
 Answering questions:
 
-There are `r nrow(brfss_smart2010_tidy)` unique locations in the dataset.
+There are `nrow(distinct(brfss_smart2010_tidy, county, .keep_all = TRUE))` unique locations in the dataset.
 
 ```{r number_of_states}
 distinct(brfss_smart2010_tidy, state, .keep_all = TRUE) %>% 
