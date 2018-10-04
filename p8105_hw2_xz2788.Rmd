@@ -122,7 +122,7 @@ Therefore, 60 distinct stations serve the A train and 17 of these are ADA compli
 Import and tidy the Mr. Trash Wheel sheet:
 
 ```{r tidy_sheet_1}
-trash_wheel_data = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", range = "A2:N258", sheet = 1) %>%
+trash_wheel_data = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", range = "A2:N338", sheet = 1) %>%
   janitor::clean_names() %>% 
   rename(weight = weight_tons, volume = volume_cubic_yards) %>% 
   filter(!is.na(dumpster))
@@ -148,7 +148,7 @@ skimr::skim(trash_wheel_data)
 Import and tidy precipitation data for 2016 and 2017:
 
 ```{r tidy_precipitation_sheet_2017}
-precipit_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 3) %>% 
+precipit_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 4) %>% 
   janitor::clean_names() %>% 
   rename(month = precipitation_in, precipitation = x_1) %>% 
   na.omit() %>% 
@@ -156,11 +156,11 @@ precipit_data_2017 = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.x
 precipit_data_2017$precipitation = as.numeric(precipit_data_2017$precipitation)
 precipit_data_2017 = precipit_data_2017[-1,]
 precipit_data_2017$precipitation = round(precipit_data_2017$precipitation, digits = 2)
-precipit_data_2017$month = month.name[1:8]
+precipit_data_2017$month = month.name
 ```
 
 ```{r tidy_precipitation_sheet_2016}
-precipit_data_2016 = read_excel("./data/HealthyHarborWaterWheelTotals2017-9-26.xlsx", sheet = 4) %>% 
+precipit_data_2016 = read_excel("./data/HealthyHarborWaterWheelTotals2018-7-28.xlsx", sheet = 5) %>% 
   janitor::clean_names() %>% 
   rename(month = precipitation_in, precipitation = x_1) %>% 
   na.omit() %>% 
