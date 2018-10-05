@@ -69,7 +69,7 @@ dim(transit_data_clean)
 
 ## Description of this dataset:
 
-This dataset contains 19 variables and 465 records (stations). The variables include line, station name as well as its location, the routes served at that station, entry and its type, vending and ADA compliance. Station location (latitude/longitude) are numeric variables, "entry", "vending" and "ada" are logical variables. All of the others are character variables.
+This dataset is about the New York City Transit data and contains 32 variables and 1868 records. It gives the information about the exit, entrance, metro routes served at each station and the equipment in each exit and entrance. Station location (latitude/longitude) and entrance location are numeric variables, "free_crossover", "entry" and "ada" are logical variables. All of the others are character variables. 
 
 ## Process of data cleaning:
 
@@ -179,9 +179,9 @@ precipit_data = bind_rows(precipit_data_2016, precipit_data_2017)
 
 ## Describe these datasets:
 
-The "trash_wheel_data" consists of `r ncol(trash_wheel_data)` variables and `r nrow(trash_wheel_data)` observations. These variables are "`r names(trash_wheel_data)`", mainly documenting weight and date of trash and its types.
+The "trash_wheel_data" consists of `r ncol(trash_wheel_data)` variables and `r nrow(trash_wheel_data)` observations. These variables are "`r names(trash_wheel_data)`", mainly documenting dumpster number, weight and date of trash and its types from 2014 to 2018. This dataset is from the public "Mr. Trash Wheel" website.
 
-The "precipit_data" consists of `r ncol(precipit_data)` variables and `r nrow(precipit_data)` observations. The key variables are precipitation in each month of 2016 and 2017. The total precipitation in 2017 is `r sum(precipit_data[which(precipit_data[,3] == 2017), 2])` and the median number of sports balls in a dumpster in 2016 is `r median(filter(trash_wheel_data, year == 2016)$sports_balls)`.
+The "precipit_data" consists of `r ncol(precipit_data)` variables and `r nrow(precipit_data)` observations. The key variables are precipitation in each month of 2016 and 2017. This data is also from the public document of "Mr. Trash Wheel". The total precipitation in 2017 is `r sum(precipit_data[which(precipit_data[,3] == 2017), 2])` and the median number of sports balls in a dumpster in 2016 is `r median(filter(trash_wheel_data, year == 2016)$sports_balls)`.
 
 # Problem 3
 
